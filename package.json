@@ -1,0 +1,11 @@
+{
+  "name": "dumbot 2.0",
+  "version": "1.0.0",
+  "description": "idk what do u want this to say",
+  "main": "bot.js",
+  "author": "Generic DM",
+  "dependencies": {
+    "discord.io": "github:woor/discord.io#gateway_v6",
+    "discord.js": "^11.3.0"
+  }
+}

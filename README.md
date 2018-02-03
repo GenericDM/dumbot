@@ -1,2 +1,2 @@
-# dumbot
-me stupid bot lol
+run the 'npm bot.js'
+command to run boat
