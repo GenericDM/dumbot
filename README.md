@@ -1,4 +1,2 @@
-run the 'npm bot.js'
+run the 'node bot.js'
 command to run boat
-,?????
-,profit
