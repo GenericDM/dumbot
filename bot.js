@@ -6,7 +6,7 @@ const auth = require("./auth.json");
 bot.login(auth.token);
 var prefix = auth.prefix
 bot.on("ready", function () {
-    console.log("lol hi im alive");
+    console.log("Let there be life.");
 	bot.user.setActivity('prefix is: ' + (prefix));
 	bot.user.setStatus('dnd');
 });
@@ -15,13 +15,14 @@ bot.on("message", function (message) {
 
     if (!message.content.startsWith(auth.prefix)) return;
 
-    var args = message.content.substring((auth.prefix).length).split(" ");
+    var args = message.content.substring((auth.prefix).length).trim().split(/ +/g);
 
-    switch (args[0].toLowerCase()) {
+    switch (args.shift().toLowerCase()) {
     case 'changeprefix':
-      let newPrefix = message.content.split(" ").slice(1,2)[0];
-      auth.prefix = newPrefix;
-      var prefix = newPrefix;
+        let newPrefix = message.content.split(" ").slice(1,2)[0];
+        auth.prefix = newPrefix;
+        var prefix = newPrefix;
+        bot.user.setActivity('prefix is: ' + (prefix));
 
       fs.writeFile("./auth.json", JSON.stringify(auth), (err) => console.error);
       break;
@@ -50,16 +51,8 @@ bot.on("message", function (message) {
 			message.member.setNickname('dumbass')
 			break;
 		case 'help':
-			message.channel.send('Commands sent to you in your DMs')
-			message.author.send('- help - take a guess')
-			message.author.send('- vote - makes ur message into a vote')
-			message.author.send('- xd - xd')
-			message.author.send('- yeah - yeah')
-      message.author.send("-everyone - @'s everyone")
-			message.author.send('- say - Says whatever you say.')
-			message.author.send('- number - makes a random numbr')
-			message.author.send('- idiot - fuckin dumbass')
-			message.author.send('- one - 1 gif')
+			message.channel.send("Commands sent to you in your DMs")
+      message.author.send('- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif')
 			break;
 		case 'vote':
 			message.react('👍')
@@ -88,27 +81,44 @@ bot.on("message", function (message) {
 			console.log(text);
 			break;
 		case 'gay':
-			message.channel.send("no u")
+			message.channel.send("lol u sure are")
 			break;
 		case 'pants':
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖👖')
       break;
         default:
 		    if (message.author.equals(bot.user)) return;
 			message.channel.send("I don't recognise this command, try something else!", {
-				tts: true
+				tts: false
 			})
 			message.react('🇪')
     }
 });
-
+//  bot.on("message", (message) => {
+//    if (message.author.id !== auth.owner_id) return;
+//    if (message.content === ('<@408821911351590912> prefix'));
+//        let newPrefix = message.content.split(" ").slice(1,2)[0];
+//        auth.prefix = newPrefix;
+//        var prefix = newPrefix;
+//        bot.user.setActivity('prefix is: ' + (prefix));
+//});
+//  })
+  bot.on("message", (message) => {
+  if (message.content === '<@408821911351590912>') {
+    var help = (prefix + 'help')
+    message.channel.send('Type ' + help + ' to see a list of commands')
+  }
+});
 bot.on("message", function (message) {
-
 	if (message.content === '@everyone') {
 	message.channel.send('Pinged lmao')
 	}
+});
+bot.on("guildMemberAdd", (member) => {
+  console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
+  member.guild.channels.get("general").send(`"${member.user.username}" has made a mistake`);
 });
