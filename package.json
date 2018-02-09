@@ -1,11 +1,17 @@
 {
-  "name": "dumbot 2.0",
+  "name": "dumbot",
   "version": "1.0.0",
-  "description": "idk what do u want this to say",
-  "main": "bot.js",
-  "author": "Generic DM",
+  "description": "run the 'node bot.js' command to run boat",
+  "main": "asdf.js",
   "dependencies": {
-    "discord.io": "github:woor/discord.io#gateway_v6",
-    "discord.js": "^11.3.0"
-  }
+    "discord.js": "^11.3.0",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "genericdm",
+  "license": "ISC"
 }

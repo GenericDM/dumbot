@@ -3,12 +3,18 @@ const Discord = require("discord.js");
 var bot = new Discord.Client();
 const auth = require("./auth.json");
 //made from CopperBanana's weird bot script, thanks Copper!
+//comment for webhook test
 bot.login(auth.token);
 var prefix = auth.prefix
 bot.on("ready", function () {
     console.log("Let there be life.");
 	bot.user.setActivity('prefix is: ' + (prefix));
 	bot.user.setStatus('dnd');
+});
+
+bot.on("guildMemberAdd", (member) => {
+  console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
+  member.guild.channels.find('name','general').send(`Welcome, "${member.user.username}" enjoy your (hopefully long) stay.`);
 });
 
 bot.on("message", function (message) {
@@ -19,6 +25,7 @@ bot.on("message", function (message) {
 
     switch (args.shift().toLowerCase()) {
     case 'changeprefix':
+        if(message.author.id !== auth.owner_id) return;
         let newPrefix = message.content.split(" ").slice(1,2)[0];
         auth.prefix = newPrefix;
         var prefix = newPrefix;
@@ -83,12 +90,15 @@ bot.on("message", function (message) {
 		case 'gay':
 			message.channel.send("lol u sure are")
 			break;
+    case 'testy':
+      bot.emit("guildMemberAdd", message.member);
+      break;
 		case 'pants':
-			message.channel.send('👖👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖')
       break;
         default:
 		    if (message.author.equals(bot.user)) return;
@@ -117,8 +127,4 @@ bot.on("message", function (message) {
 	if (message.content === '@everyone') {
 	message.channel.send('Pinged lmao')
 	}
-});
-bot.on("guildMemberAdd", (member) => {
-  console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
-  member.guild.channels.get("general").send(`"${member.user.username}" has made a mistake`);
 });
