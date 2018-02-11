@@ -1,55 +1,74 @@
 const fs = require("fs");
+const crypto = require("crypto")
 const Discord = require("discord.js");
 var bot = new Discord.Client();
 const auth = require("./auth.json");
-//made from CopperBanana's weird bot script, thanks Copper!
+//made from CopperBanana's weird bot framework, thanks Copper!
 //comment for webhook test
 bot.login(auth.token);
 var prefix = auth.prefix
 bot.on("ready", function () {
-    console.log("Let there be life.");
+	console.log("Let there be life.");
 	bot.user.setActivity('prefix is: ' + (prefix));
 	bot.user.setStatus('dnd');
 });
 
+function convertToHex(str) {
+	var hex = '';
+	for (var i = 0; i < str.length; i++) {
+		hex += '' + str.charCodeAt(i).toString(16);
+	}
+	return hex;
+}
+
 bot.on("guildMemberAdd", (member) => {
-  console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
-  member.guild.channels.find('name','general').send(`Welcome, "${member.user.username}" enjoy your (hopefully long) stay.`);
+	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"`);
+	member.guild.channels.find('name', 'general').send(`Welcome, "${member.user.username}" enjoy your (hopefully long) stay.`);
 });
 
 bot.on("message", function (message) {
 
-    if (!message.content.startsWith(auth.prefix)) return;
+	if (!message.content.startsWith(auth.prefix)) return;
 
-    var args = message.content.substring((auth.prefix).length).trim().split(/ +/g);
+	var args = message.content.substring((auth.prefix).length).trim().split(/ +/g);
 
-    switch (args.shift().toLowerCase()) {
-    case 'changeprefix':
-        if(message.author.id !== auth.owner_id) return;
-        let newPrefix = message.content.split(" ").slice(1,2)[0];
-        auth.prefix = newPrefix;
-        var prefix = newPrefix;
-        bot.user.setActivity('prefix is: ' + (prefix));
-
-      fs.writeFile("./auth.json", JSON.stringify(auth), (err) => console.error);
-      break;
+	switch (args.shift().toLowerCase()) {
+		case 'about':
+			const embed = new Discord.RichEmbed()
+				.addField(`Made by`, `<@205840324407459840> and <@344960470140321794>`)
+				.setColor('RANDOM')
+			message.channel.send(embed)
+			break;
+		case 'changeprefix':
+			if (message.author.id !== auth.owner_id) return;
+			let newPrefix = message.content.split(" ").slice(1, 2)[0];
+			auth.prefix = newPrefix;
+			var prefix = newPrefix;
+			console.log("new prefix, " + prefix)
+			bot.user.setActivity('prefix is: ' + (prefix));
+			fs.writeFile("./auth.json", JSON.stringify(auth), (err) => console.error);
+			break;
 		case 'number':
 			var randomNumber = Math.floor(Math.random() * 99999999999999999) + 1;
 			message.channel.send('wowee that sure is randem xd: ' + randomNumber)
 			break;
+		case 'tohex':
+			let hexstring = message.content.slice((auth.prefix).length).trim().split(/ +/g).slice(1).join(" ");
+			message.channel.send(convertToHex(hexstring))
+			break;
 		case 'lmao':
-			var embed = new Discord.RichEmbed()
+			var embed2 = new Discord.RichEmbed()
 				.setImage('https://cdn.discordapp.com/emojis/356556240609869824.png?v=1')
 			message.channel.sendEmbed(embed)
 			break;
 		case 'one':
-			var embed = new Discord.RichEmbed()
+			var embed2 = new Discord.RichEmbed()
 				.setImage('https://cdn.discordapp.com/emojis/393886629980405781.gif?v=1')
 				.setColor('RANDOM')
 			message.channel.sendEmbed(embed)
 			break;
 		case 'shit':
-			var embed = new Discord.RichEmbed()
+			var embed2 = new Discord.RichEmbed()
 				.setImage('https://www.youtube.com/watch?v=rouKUSoYjVw')
 				.setColor('RANDOM')
 			message.channel.sendEmbed(embed)
@@ -59,7 +78,7 @@ bot.on("message", function (message) {
 			break;
 		case 'help':
 			message.channel.send("Commands sent to you in your DMs")
-      message.author.send('- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif')
+			message.author.send('- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif \n-tohex -converts your input into hex')
 			break;
 		case 'vote':
 			message.react('👍')
@@ -73,7 +92,7 @@ bot.on("message", function (message) {
 		case "everyone":
 			message.channel.send(' ' + message.author)
 			message.channel.send('Get fucked')
-            break;
+			break;
 		case "xd":
 			message.channel.send('xd')
 			break;
@@ -90,41 +109,32 @@ bot.on("message", function (message) {
 		case 'gay':
 			message.channel.send("lol u sure are")
 			break;
-    case 'testy':
-      bot.emit("guildMemberAdd", message.member);
-      break;
+		case 'testy':
+			bot.emit("guildMemberAdd", message.member);
+			break;
 		case 'pants':
 			message.channel.send('👖👖👖👖👖👖👖')
 			message.channel.send('👖👖👖👖👖👖👖')
 			message.channel.send('👖👖👖👖👖👖👖')
 			message.channel.send('👖👖👖👖👖👖👖')
 			message.channel.send('👖👖👖👖👖👖👖')
-      break;
-        default:
-		    if (message.author.equals(bot.user)) return;
+			break;
+		default:
+			if (message.author.equals(bot.user)) return;
 			message.channel.send("I don't recognise this command, try something else!", {
 				tts: false
 			})
 			message.react('🇪')
-    }
+	}
 });
-//  bot.on("message", (message) => {
-//    if (message.author.id !== auth.owner_id) return;
-//    if (message.content === ('<@408821911351590912> prefix'));
-//        let newPrefix = message.content.split(" ").slice(1,2)[0];
-//        auth.prefix = newPrefix;
-//        var prefix = newPrefix;
-//        bot.user.setActivity('prefix is: ' + (prefix));
-//});
-//  })
-  bot.on("message", (message) => {
-  if (message.content === '<@408821911351590912>') {
-    var help = (prefix + 'help')
-    message.channel.send('Type ' + help + ' to see a list of commands')
-  }
+bot.on("message", (message) => {
+	if (message.content === '<@408821911351590912>') {
+		var help = (prefix + 'help')
+		message.channel.send('Type ' + help + ' to see a list of commands')
+	}
 });
 bot.on("message", function (message) {
 	if (message.content === '@everyone') {
-	message.channel.send('Pinged lmao')
+		message.channel.send('Pinged lmao')
 	}
 });
