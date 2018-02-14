@@ -21,6 +21,14 @@ function convertToHex(str) {
 	return hex;
 }
 
+function convertFromHex(hex) {
+	var hex = hex.toString(); //force conversion
+	var str = '';
+	for (var i = 0; i < hex.length; i += 2)
+		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+	return str;
+}
+
 bot.on("guildMemberAdd", (member) => {
 	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"`);
 	member.guild.channels.find('name', 'general').send(`Welcome, "${member.user.username}" enjoy your (hopefully long) stay.`);
@@ -57,29 +65,34 @@ bot.on("message", function (message) {
 			let hexstring = message.content.slice((auth.prefix).length).trim().split(/ +/g).slice(1).join(" ");
 			message.channel.send(convertToHex(hexstring))
 			break;
+		case 'fromhex':
+			let textstring = message.content.slice((auth.prefix).length).trim().split(/ +/g).slice(1).join(" ");
+			if (textstring === "@everyone" || "@here") return;
+			message.channel.send(convertFromHex(textstring))
+			break;
 		case 'lmao':
 			var embed2 = new Discord.RichEmbed()
 				.setImage('https://cdn.discordapp.com/emojis/356556240609869824.png?v=1')
-			message.channel.sendEmbed(embed)
+			message.channel.send(embed2)
 			break;
 		case 'one':
 			var embed2 = new Discord.RichEmbed()
 				.setImage('https://cdn.discordapp.com/emojis/393886629980405781.gif?v=1')
 				.setColor('RANDOM')
-			message.channel.sendEmbed(embed)
+			message.channel.send(embed2)
 			break;
 		case 'shit':
 			var embed2 = new Discord.RichEmbed()
 				.setImage('https://www.youtube.com/watch?v=rouKUSoYjVw')
 				.setColor('RANDOM')
-			message.channel.sendEmbed(embed)
+			message.channel.send(embed2)
 			break;
 		case 'idiot':
 			message.member.setNickname('dumbass')
 			break;
 		case 'help':
 			message.channel.send("Commands sent to you in your DMs")
-			message.author.send('- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif \n-tohex -converts your input into hex')
+			message.author.send('-about -tell u stuff \n- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif \n-tohex -converts your input into hex \n- fromhex -converts your input from hex')
 			break;
 		case 'vote':
 			message.react('👍')
@@ -110,9 +123,9 @@ bot.on("message", function (message) {
 		case 'gay':
 			message.channel.send("lol u sure are")
 			break;
-		case 'testy':
-			bot.emit("guildMemberAdd", message.member);
-			break;
+			//		case 'testy':
+			//			bot.emit("guildMemberAdd", message.member);
+			//			break;
 		case 'pants':
 			message.channel.send('👖👖👖👖👖👖👖')
 			message.channel.send('👖👖👖👖👖👖👖')
@@ -129,7 +142,7 @@ bot.on("message", function (message) {
 	}
 });
 bot.on("message", (message) => {
-	if (message.content == '<@408821911351590912>') {
+	if (message.content === '<@408821911351590912>') {
 		var help = (prefix + 'help')
 		message.channel.send('Type ' + help + ' to see a list of commands')
 	}
