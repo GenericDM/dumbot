@@ -29,6 +29,7 @@ bot.on("guildMemberAdd", (member) => {
 bot.on("message", function (message) {
 
 	if (!message.content.startsWith(auth.prefix)) return;
+	if (message.author == bot.user) return;
 
 	var args = message.content.substring((auth.prefix).length).trim().split(/ +/g);
 
@@ -128,7 +129,7 @@ bot.on("message", function (message) {
 	}
 });
 bot.on("message", (message) => {
-	if (message.content === '<@408821911351590912>') {
+	if (message.content == '<@408821911351590912>') {
 		var help = (prefix + 'help')
 		message.channel.send('Type ' + help + ' to see a list of commands')
 	}
