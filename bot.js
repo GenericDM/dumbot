@@ -3,12 +3,12 @@ const crypto = require("crypto")
 const Discord = require("discord.js");
 var bot = new Discord.Client();
 const auth = require("./auth.json");
-//made from CopperBanana's weird bot framework, thanks Copper!
+//based off of copper's bot although it's pretty much its own thing
 //comment for webhook test
 bot.login(auth.token);
 var prefix = auth.prefix
 bot.on("ready", function () {
-	console.log("Let there be life.");
+	console.log("Bot Ready");
 	bot.user.setActivity('prefix is: ' + (prefix));
 	bot.user.setStatus('dnd');
 });
@@ -22,31 +22,63 @@ function convertToHex(str) {
 }
 
 function convertFromHex(hex) {
-	var hex = hex.toString(); //force conversion
+	var hex = hex.toString();
 	var str = '';
 	for (var i = 0; i < hex.length; i += 2)
 		str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 	return str;
 }
 
+bot.on("error", (err) => {
+	console.log(`Error Encountered!\n${err.error}`)
+});
+
+//bot.on("guildCreate", (server) => {
+//	console.log(`Bot has joined ${server.guild.name}`);
+//});
+
+//bot.on("guildDelete", (server) => {
+//	console.log(`Bot has left ${server.guild.name}`);
+//});
+
 bot.on("guildMemberAdd", (member) => {
 	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"`);
-	member.guild.channels.find('name', 'general').send(`Welcome, "${member.user.username}" enjoy your (hopefully long) stay.`);
+	member.guild.channels.find('name', 'general').send(`Welcome to ${member.guild.name}, ${member.user} enjoy your (hopefully long) stay.`);
 });
 
 bot.on("message", function (message) {
 
 	if (!message.content.startsWith(auth.prefix)) return;
 	if (message.author == bot.user) return;
+	if (message.author.bot == true) return;
 
 	var args = message.content.substring((auth.prefix).length).trim().split(/ +/g);
 
 	switch (args.shift().toLowerCase()) {
+		case 'kickme':
+			message.channel.send(`lmao`)
+			message.member.kick(`you played yourself`)
+			break;
 		case 'about':
 			const embed = new Discord.RichEmbed()
 				.addField(`Made by`, `<@205840324407459840> and <@344960470140321794>`)
 				.setColor('RANDOM')
 			message.channel.send(embed)
+			break;
+		case 'bean':
+			var text2 = message.content.slice(auth.prefix.length).trim().split(/ +/g).slice(1).join(" ");
+			if (!text2.includes("<") || text2.length === 0) {
+				message.channel.send('lol u need to mention sum1')
+				return;
+			}
+			if (text2.length > 0) {
+				var embed2 = new Discord.RichEmbed()
+					.setImage('https://cdn.discordapp.com/emojis/373649328222502912.png?v=1')
+					.addField(`BEANED`, text2 + ` just got beaned!`)
+				message.channel.send(embed2)
+				console.log(text2 + ` got beaned!`)
+			}
+
 			break;
 		case 'changeprefix':
 			if (message.author.id !== auth.owner_id) return;
@@ -67,7 +99,6 @@ bot.on("message", function (message) {
 			break;
 		case 'fromhex':
 			let textstring = message.content.slice((auth.prefix).length).trim().split(/ +/g).slice(1).join(" ");
-			if (textstring === "@everyone" || "@here") return;
 			message.channel.send(convertFromHex(textstring))
 			break;
 		case 'lmao':
@@ -81,57 +112,55 @@ bot.on("message", function (message) {
 				.setColor('RANDOM')
 			message.channel.send(embed2)
 			break;
-		case 'shit':
+		case 'crap':
 			var embed2 = new Discord.RichEmbed()
 				.setImage('https://www.youtube.com/watch?v=rouKUSoYjVw')
 				.setColor('RANDOM')
 			message.channel.send(embed2)
 			break;
-		case 'idiot':
-			message.member.setNickname('dumbass')
-			break;
 		case 'help':
 			message.channel.send("Commands sent to you in your DMs")
-			message.author.send('-about -tell u stuff \n- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif \n-tohex -converts your input into hex \n- fromhex -converts your input from hex')
+			message.author.send('-kickme -kicks you \n-about -tell u stuff \n- help - take a guess \n- vote - makes ur message into a vote \n- xd - xd \n- yeah - yeah \n-everyone - @s everyone \n- say - Says whatever you say. \n- number - makes a random numbr \n- idiot - fuckin dumbass \n- one - 1 gif \n-tohex -converts your input into hex \n- fromhex -converts your input from hex \n-bean -beans whoever u mention')
 			break;
 		case 'vote':
 			message.react('👍')
 			message.react('👎')
 			break;
 		case 'pin':
+			if (message.pinned == 1 || message.pinnable == 0) return;
 			message.pin()
 			message.channel.send('You got pinned!')
 			message.react('📌')
 			break;
 		case "everyone":
 			message.channel.send(' ' + message.author)
-			message.channel.send('Get fucked')
+			message.channel.send('lmao rekt')
+			break;
+		case "emittest":
+			if (message.author.id != auth.owner_id) return;
+			let event = message.content.slice(auth.prefix.length).trim().split(/ +/g).slice(1).join(" ");
+			bot.emit(toString(event), message.guild);
+			console.log(`Emitted ` + event)
 			break;
 		case "xd":
-			message.channel.send('xd')
+			var embed2 = new Discord.RichEmbed()
+				.setImage('https://cdn.discordapp.com/emojis/356929910566027274.png?v=1')
+				.setColor('RANDOM')
+			message.channel.send(embed2)
 			break;
-		case 'yeah':
-			message.channel.send('yeah')
-			break;
-		case 'say':
+		case "say":
 			let text = message.content.slice((auth.prefix).length).trim().split(/ +/g).slice(1).join(" ");
 			message.channel.send(text, {
 				tts: false
 			});
 			console.log(text);
 			break;
-		case 'gay':
-			message.channel.send("lol u sure are")
+		case 'testy':
+			if (message.author.id != auth.owner_id) return;
+			bot.emit("guildMemberAdd", message.member);
 			break;
-			//		case 'testy':
-			//			bot.emit("guildMemberAdd", message.member);
-			//			break;
 		case 'pants':
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
-			message.channel.send('👖👖👖👖👖👖👖')
+			message.channel.send('👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖\n👖👖👖👖👖👖👖')
 			break;
 		default:
 			if (message.author.equals(bot.user)) return;
